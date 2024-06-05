@@ -1,15 +1,45 @@
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <div class="page-wrapper">
+      <div class="lead">
+        <div class="lead-text">Movie Vault</div>
+        <p class="sublead-text">Download your favourite movies with just one click</p>
+      </div>
+    </div>
   </div>
 </template>
 
-<style>
+<style scoped>
 @media (min-width: 1024px) {
   .about {
     min-height: 100vh;
     display: flex;
     align-items: center;
   }
+}
+
+.page-wrapper {
+  min-height: 80vh;
+  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+div.lead {
+  text-align: center;
+}
+
+.lead .lead-text {
+  font-size: 3.2rem;
+  color: white;
+  font-weight: 700;
+  line-height: 5rem;
+}
+
+.lead .sublead-text {
+  font-size: 1.2rem;
+  line-height: 3rem;
 }
 </style>
