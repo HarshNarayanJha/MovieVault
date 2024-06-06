@@ -3,7 +3,7 @@
         <div class="page-wrapper">
             <div class="lead">
                 <div class="lead-text">Movie Vault</div>
-                <p class="sublead-text">Thanks for Requesting {{ formValues.name }}</p>
+                <p class="sublead-text">Thanks for Requesting A Movie</p>
                 <p class="sublead-text">You will receive the download link within next 24 hours</p>
             </div>
         </div>

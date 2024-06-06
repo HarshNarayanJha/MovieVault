@@ -1,17 +1,18 @@
 <script setup lang="ts">
+import HeaderComponent from './HeaderComponent.vue'
+import MailingBox from './MailingBox.vue'
+import PacmanLoader from 'vue-spinner/src/DotLoader.vue';
 </script>
 
 <template>
   <main>
     <div class="page-wrapper">
-      <div class="lead">
-        <p class="sublead-text">Movie Vault</p>
-        <p class="lead-text">Get High-Speed Download Link</p>
-        <p class="lead-text">For you Favourite Movie</p>
-      </div>
-      <form @submit="submitRequest">
-        <input type="hidden" name="subject" value="**New Movie Request**">
-        <input type="hidden" name="from_name" value="Movie Request">
+      <HeaderComponent />
+      <form @submit.prevent="submitRequest" method="post">
+        <!-- <input type="hidden" name="subject" value="New Movie Request"> -->
+        <!-- <input type="hidden" name="from_name" :value="formValues.name"> -->
+        <!-- <input type="checkbox" name="botcheck" class="hidden" v-model="botcheck" style="display: none;"> -->
+        <!-- <input type="hidden" name="_next" value="localhost:5173/thanks"> -->
         <div class="form-control">
           <input type="text" id="name" placeholder="Movie Name" autofocus="true" autocomplete="false"
             v-model="formValues.name" required>
@@ -36,40 +37,53 @@
           </select>
         </div>
         <div class="form-control">
+          <input type="text" id="customer-name" placeholder="Your Name" autocomplete="name"
+            v-model="formValues.customerName" required>
+        </div>
+        <div class="form-control">
+          <input type="text" id="upi" placeholder="Your@UPI for payment" autocomplete="upi" v-model="formValues.upi"
+            pattern="([a-zA-Z0-9]+)(@)([a-z]+)" required>
+        </div>
+        <div class="form-control">
           <input type="email" id="email" placeholder="Your Email" autocomplete="email" v-model="formValues.email"
             required>
         </div>
+        <div class="form-control h-captcha" data-captcha="true" data-theme="dark"></div>
+        <p>NOTE: We charge a <i>small</i> amount of only 5 rupees to keep this awesome service running :)</p>
         <div class="form-control">
-          <button type="submit">Send</button>
+          <button type="submit" :disabled="submitting">Send</button>
         </div>
-        <p>You will receive the download link within next 24 hours.</p>
+        <p>You will receive an email containing the payment link and the movie download link within the next 24 hours.
+        </p>
       </form>
 
-      <div v-if="submitted">
+      <div v-if="submitting">
+        <p>Please Wait...</p>
+      </div>
 
-        <p style="font-size: 2rem; margin-top: 3rem; color: white;">Thank you!</p>
+      <div class="form-loader">
+        <pacman-loader :loading="submitting"></pacman-loader>
+      </div>
 
-        <div>You will get the Download Link in less than 24 hours.</div>
+      <div v-if="submitted" class="thankyou">
+
+        <p class="lead-text">Thank you!</p>
+
+        <p class="sublead-text">You will find the Payment and Download Link in your inbox in less than 24 hours.</p>
+
+      </div>
+      <div v-if="error" class="error">
+
+        <p class="lead-text">Error!</p>
+
+        <p class="sublead-text">Some kind of error occurred while sending the request, please try again.</p>
 
       </div>
 
-      <hr>
+      <hr class="divider">
 
       <footer>
-
-        <div class="box">
-          <p>Join the Mailing List</p>
-          <form>
-            <div class="form-control">
-              <input type="email" id="email" placeholder="Your Email" autocomplete="email">
-            </div>
-            <p>We won't Spam</p>
-            <div class="form-control">
-              <button type="submit">Join Up!</button>
-            </div>
-          </form>
-        </div>
-
+        <MailingBox />
       </footer>
     </div>
 
@@ -77,22 +91,61 @@
 </template>
 
 <script lang="ts">
+
 export default {
   data() {
     return {
+      submitting: false,
       submitted: false,
+      botcheck: false,
+      error: false,
       formValues: {
-        name: '',
-        quality: '1080p',
-        size: 'low',
-        email: '',
+        name: "",
+        quality: "1080p",
+        size: "low",
+        customerName: "",
+        upi: "",
+        email: "",
       },
-    }
+    };
   },
   methods: {
-    async submitRequest(event) {
-      event.preventDefault();
-      console.log(this.formValues);
+    async submitRequest() {
+
+      this.submitting = true;
+
+      // try {
+      //   const response = await fetch("https://formcarry.com/s/xdzTV97Ns6R", {
+      //     method: 'POST',
+      //     headers: {
+      //       "Accept": "application/json",
+      //       "Content-Type": "application/json"
+      //     },
+      //     body: JSON.stringify({ name: this.formValues.name, quality: this.formValues.quality, size: this.formValues.size, email: this.formValues.email })
+      //   });
+
+      //   const data = await response.json();
+
+      //   if (data.code === 200) {
+      //     this.submitted = true;
+      //   } else if (data.code === 422) {
+      //     // error.value = data.message;
+      //   } else {
+      //     // error.value = data.message;
+      //   }
+      // } catch (err) {
+      //   // error.value = err.message ? err.message : err;
+      // }
+
+      const hCaptcha = document.querySelector('textarea[name=h-captcha-response]')?.value;
+
+      if (hCaptcha != null) {
+        if (!hCaptcha) {
+          alert("Please fill out captcha field");
+          return;
+        }
+      }
+
       const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
         headers: {
@@ -100,29 +153,42 @@ export default {
           Accept: "application/json",
         },
         body: JSON.stringify({
-          access_key: WEB3FORMS_ACCESS_KEY,
+          access_key: import.meta.env.VITE_WEB3FORMS_ACCESS_KEY,
           name: this.formValues.name,
           quality: this.formValues.quality,
           size: this.formValues.size,
+          customerName: this.formValues.customerName,
+          upi: this.formValues.upi,
           email: this.formValues.email,
+
+          subject: "New Movie Request",
+          from_name: "Movie Vault App",
+          // botcheck: this.botcheck,
         }),
       });
       const result = await response.json();
       if (result.success) {
-        console.log(result);
+        // console.log(result);
+        setTimeout(() => {
+          this.submitted = true;
+          this.submitting = false;
+        }, 1000);
+      } else {
+        setTimeout(() => {
+          this.error = true;
+          this.submitting = false;
+        }, 1000);
       }
-      setTimeout(() => {
-        this.submitted = true;
-      }, 100);
     }
-  }
+  },
+  components: { HeaderComponent, MailingBox, PacmanLoader }
 }
 </script>
 
-<style scoped>
+<style>
 .page-wrapper {
-  min-height: 80vh;
-  margin-top: 5rem;
+  min-height: 100vh;
+  margin-top: 4rem;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
@@ -140,6 +206,14 @@ div.lead {
   line-height: 5rem;
 }
 
+@media (max-width: 768px) {
+  .lead .lead-text {
+    font-size: 2.2rem;
+    font-weight: 900;
+    line-height: 3.5rem;
+  }
+}
+
 .lead .sublead-text {
   font-size: 1.2rem;
   line-height: 3rem;
@@ -150,11 +224,25 @@ form {
 }
 
 div.form-control {
-  padding: 2rem;
+  padding: 1.5rem;
   min-width: 50vw;
-  text-align: center;
+  text-align: start;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+div.form-control.h-captcha {
+  justify-content: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+div.form-loader {
+  /* margin-top: 2rem; */
+  padding: 2rem;
+  display: flex;
+  justify-content: center;
   align-items: center;
 }
 
@@ -166,6 +254,7 @@ label {
 input {
   height: 3rem;
   width: 100%;
+  padding: 1.5rem;
   background-color: rgba(255, 255, 255, 0.05);
   border: 0;
   border-radius: 0.5rem;
@@ -177,8 +266,10 @@ input {
 }
 
 select {
+  height: 2.5rem;
+  padding: 0.5rem;
   background-color: rgba(255, 255, 255, 0.05);
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
   border: 0;
   border-bottom: 2px solid grey;
   color: white;
@@ -207,27 +298,71 @@ div.form-control button {
   margin-left: auto;
   padding: 0.5rem;
   width: 50%;
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: rgba(0, 119, 255, 0.2);
   border-radius: 0.5rem;
   border: 2px solid grey;
   color: white;
   font-size: 1.2rem;
   text-align: center;
   font-weight: 200;
-  transition: 250ms all;
+  transition: all 250ms;
 }
 
 div.form-control button:hover {
-  width: 50%;
-  background-color: rgba(255, 255, 255, 0.01);
-  border: 2px solid grey;
-  border-radius: 0.5rem;
+  background-color: rgba(94, 185, 192, 0.01);
 }
 
-hr {
-  margin-top: 10rem;
+div.form-control button:disabled {
+  background-color: rgba(255, 255, 255, 0);
+  color: rgba(128, 128, 128, 0.445);
+  border-color: black;
+}
+
+div.thankyou {
+  text-align: center;
+  color: white
+}
+
+div.thankyou .lead-text {
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 3.5rem;
+}
+
+div.thankyou .sublead-text {
+  font-size: 1.2rem;
+  line-height: 3rem;
+}
+
+div.error {
+  text-align: center;
+  color: red;
+}
+
+div.error .lead-text {
+  font-size: 2.2rem;
+  font-weight: 900;
+  line-height: 3.5rem;
+}
+
+div.error .sublead-text {
+  color: rgba(196, 0, 0, 0.767);
+  font-size: 1.2rem;
+  line-height: 3rem;
+}
+
+hr.divider {
+  margin-top: 5rem;
   margin-bottom: 10rem;
   width: 100%;
+}
+
+@media (max-width: 768px) {
+  hr.divider {
+    margin-top: 1.5rem;
+    margin-bottom: 5rem;
+    /* width: 100%; */
+  }
 }
 
 footer {
