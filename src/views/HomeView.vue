@@ -41,19 +41,14 @@ import PacmanLoader from 'vue-spinner/src/DotLoader.vue';
             v-model="formValues.customerName" required>
         </div>
         <div class="form-control">
-          <input type="text" id="upi" placeholder="Your@UPI for payment" autocomplete="upi" v-model="formValues.upi"
-            pattern="([a-zA-Z0-9]+)(@)([a-z]+)" required>
-        </div>
-        <div class="form-control">
           <input type="email" id="email" placeholder="Your Email" autocomplete="email" v-model="formValues.email"
             required>
         </div>
         <div class="form-control h-captcha" data-captcha="true" data-theme="dark"></div>
-        <p>NOTE: We charge a <i>small</i> amount of only 5 rupees to keep this awesome service running :)</p>
         <div class="form-control">
           <button type="submit" :disabled="submitting">Send</button>
         </div>
-        <p>You will receive an email containing the payment link and the movie download link within the next 24 hours.
+        <p>You will receive an email containing the download link within the next 24 hours.
         </p>
       </form>
 
@@ -69,7 +64,7 @@ import PacmanLoader from 'vue-spinner/src/DotLoader.vue';
 
         <p class="lead-text">Thank you!</p>
 
-        <p class="sublead-text">You will find the Payment and Download Link in your inbox in less than 24 hours.</p>
+        <p class="sublead-text">You will find the Download Link in your inbox in less than 24 hours.</p>
 
       </div>
       <div v-if="error" class="error">

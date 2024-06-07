@@ -4,6 +4,9 @@
       <div class="lead">
         <div class="lead-text">Movie Vault</div>
         <p class="sublead-text">Download your favourite movies with just one click</p>
+        <br>
+        <p class="sublead-text">NOTE: This is just an educational project to learn Vue.js and this does not support piracy nor provides any movie download links.</p>
+        <p class="sublead-text">We do not support piracy. Always purchase movies.</p>
       </div>
     </div>
   </div>

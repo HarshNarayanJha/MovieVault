@@ -1,18 +1,13 @@
-# MovieVault
+# Movie-Vault
 
-This template should help get you started developing with Vue 3 in Vite.
+## What is this
 
-## Recommended IDE Setup
+A simple Vue.js App which I made to learn Vue.js
+NOTE: This is just an educational project to learn Vue.js and this does not support piracy nor provides any movie download links.
+We do not support piracy. Always purchase movies.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+Visit the example site hosted at https://movie-vault-app.netlify.app
+NOTE that you won't get any download links for real. Purchase movies directly
 
 ## Project Setup
 
